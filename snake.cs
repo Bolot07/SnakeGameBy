@@ -89,3 +89,90 @@ namespace snape
                 default:
                     break;
             }
+            if (Field[head.X, head.Y] == Tile.Apple)
+            {
+                Field[head.X, head.Y] = Tile.Head;
+                Field[snake[0].X, snake[0].Y] = Tile.Body;
+
+                snake.Insert(0, head);
+
+                countApple++;
+
+                SetApple();
+            }
+
+            if(Field[head.X, head.Y] == Tile.Void)
+            {
+                Field[head.X, head.Y] = Tile.Head;
+                Field[snake[0].X, snake[0].Y] = Tile.Body;
+
+                snake.Insert(0, head);
+
+                Coord tail = snake[snake.Count - 1];
+                Field[tail.X, tail.Y] = Tile.Void;
+                snake.RemoveAt(snake.Count - 1);
+
+            }
+
+        }
+
+        Random rnd = new Random();
+
+
+        public SolidBrush currentBrush = new SolidBrush(Color.Red);
+        public SolidBrush currentBrushPitonBody = new SolidBrush(Color.Gray);
+        public void SetApple()
+        {
+            List<Coord> lst = new List<Coord>();
+            for (int i = 0; i < W; i++)
+            {
+                for (int j = 0; j < H; j++)
+                {
+                    if (Field[i, j] == Tile.Void) lst.Add(new Coord(i,j));
+                }
+            }
+
+            Coord apple = lst[rnd.Next(lst.Count)];
+
+            Field[apple.X, apple.Y] = Tile.Apple;
+
+
+            currentBrushPitonBody = currentBrush;
+            currentBrush = new SolidBrush(Color.FromArgb(255, (byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256)));
+
+        }
+
+        public Direction CurrentDirection = Direction.Up;
+        public snape(int w, int h)
+        {
+            W = w;
+            H = h;
+            Field = new Tile[W, H];
+            Init();
+        }
+    }
+
+    public class Coord
+    {
+        public int X;
+        public int Y;
+
+        public Coord(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+        public Coord() { }
+    }
+}
+
+Листинг программы Form1.cs
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
