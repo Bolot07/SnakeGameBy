@@ -176,3 +176,100 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+namespace snape
+{
+    public partial class Form1 : Form
+    {
+        snape play = null;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        int atomR = 10;
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            if(play!=null)
+            {
+
+                int wR = (pictureBox1.Width / snape.W) / 2 - 1;
+                int hR = (pictureBox1.Height / snape.H) / 2 - 1;
+
+
+                Graphics g = e.Graphics;
+                for (int i = 0; i < snape.W; i++)
+                {
+                    for (int j = 0; j < snape.H; j++)
+                    {
+                        Rectangle r = new Rectangle(i * wR*2, j * hR*2, 2 * wR-1, 2 * hR-1);
+                        switch (play.Field[i,j])
+                        {
+                            case Tile.Void:
+                                g.DrawEllipse(Pens.LightGray, r);
+                                //g.FillEllipse(Brushes.Green, r);
+                                break;
+                            case Tile.Head:
+                                g.DrawEllipse(Pens.Green, r);
+                                g.FillEllipse(Brushes.Green, r);
+                                break;
+                            case Tile.Body:
+                                g.DrawEllipse(Pens.White, r);
+                                g.FillEllipse(play.currentBrushPitonBody, r);
+                                break;
+                            case Tile.Apple:
+                                g.DrawEllipse(Pens.White, r);
+                                g.FillEllipse(play.currentBrush, r);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    Text = "Съедено яблок: " + play.countApple.ToString();
+                }
+
+                if (play.isDead())
+                {
+                    Text = "СМЕРТЬ!!!!";
+                    timer1.Stop();
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            play = new snape((int)numericUpDown2.Value, (int)numericUpDown1.Value);
+            play.Init();
+            pictureBox1.Invalidate();
+            timer1.Start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            play.Tern();
+            pictureBox1.Invalidate();       
+        }
+
+        private void button1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up) play.CurrentDirection = Direction.Up;
+            if (e.KeyCode == Keys.Down) play.CurrentDirection = Direction.Down;
+            if (e.KeyCode == Keys.Left) play.CurrentDirection = Direction.Left;
+            if (e.KeyCode == Keys.Right) play.CurrentDirection = Direction.Right;
+
+            if (e.KeyCode == Keys.Add)
+                if (timer1.Interval > 20) timer1.Interval = timer1.Interval - 20;
+            if (e.KeyCode == Keys.Subtract)
+                if (timer1.Interval < 300) timer1.Interval = timer1.Interval + 20;
+            pictureBox1.Invalidate();
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
